@@ -5,6 +5,7 @@ on:
     - cron: '*/5 * * * *'
   push:
     branches: ["main"]
+
 jobs:
   run-bot:
     runs-on: ubuntu-latest
