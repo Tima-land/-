@@ -1,0 +1,21 @@
+name: Telegram Bot Runner
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+  push:
+    branches: ["main"]
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: python bot.py
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+      - uses: ChristophShyper/keep-alive-workflow@v1
+        if: always()
