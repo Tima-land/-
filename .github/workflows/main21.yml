@@ -1,0 +1,38 @@
+name: Telegram Bot Runner  # Название workflow (отображается в интерфейсе GitHub)
+
+on:  # Триггеры запуска
+  workflow_dispatch:  # Ручной запуск через UI GitHub
+  schedule:          # Автоматический запуск по расписанию
+    - cron: '*/5 * * * *'  # Каждые 5 минут (синтаксис cron)
+  push:              # Запуск при пуше в ветку
+    branches: ["main"]  # Только для ветки main
+
+jobs:  # Основные задачи
+  run-bot:  # ID задачи (можно любое название)
+    runs-on: ubuntu-latest  # Используем последний Ubuntu
+
+    steps:  # Последовательность шагов
+    # Шаг 1: Клонируем репозиторий
+    - name: Checkout code
+      uses: actions/checkout@v4  # Официальное действие GitHub
+
+    # Шаг 2: Установка Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:  # Параметры
+        python-version: '3.11'  # Точная версия
+
+    # Шаг 3: Установка зависимостей
+    - name: Install dependencies
+      run: pip install -r requirements.txt  # Стандартная команда pip
+
+    # Шаг 4: Запуск бота
+    - name: Run Bot
+      env:  # Переменные окружения
+        TOKEN: ${{ secrets.TOKEN }}  # Достаем токен из секретов
+      run: python bot.py  # Команда запуска
+
+    # Шаг 5: Механизм "keep-alive"
+    - name: Keep alive pulse
+      uses: ChristophShyper/keep-alive-workflow@v1
+      if: always()  # Выполнять даже при ошибках предыдущих шаго
